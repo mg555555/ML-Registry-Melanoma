@@ -1,0 +1,89 @@
+# config.yaml
+
+# General settings
+project:
+  name: DermaMLProject
+  version: 1.0
+  author: Lena
+
+# Data settings
+data:
+  input_path: "data/input/"
+  output_path: "data/output/"
+  train_test_split: 0.8
+  random_seed: 42
+  pickle_path: "/Users/stempfle/Documents/Project_Dermatology/Dermatology/Code/mellanoma/data/_099999_HEADINGS_TO_LENA.pickle"
+
+# Sampling settings
+sampling:
+  method: stratified  # Options: random, stratified, oversampling, undersampling
+  params:
+    stratify_by: target
+    oversampling_ratio: 0.5  # Only used if method is oversampling
+    undersampling_ratio: 0.5  # Only used if method is undersampling
+
+# Preprocessing settings
+preprocessing:
+  numeric_imputation:
+    strategy: median
+    add_indicator: true
+  categorical_imputation:
+    strategy: constant
+    fill_value: Unknown
+  encoding:
+    method: one_hot  # Options: one_hot, label, target
+    handle_unknown: ignore
+    sparse_output: false
+
+# Model settings
+model:
+  type: decision_tree  # The model type to be used (decision_tree, logistic_regression, xgboost, PSM_lr, SPSM_lr)
+  classifiers:
+    decision_tree: DecisionTreeClassifier
+    logistic_regression: LogisticRegression
+    xgboost: XGBClassifier
+    PSM_lr: sharing_models.SharingLogisticSubModel
+    SPSM_lr: sharing_models.SharingLogisticSubModel
+  hyperparameters:
+    decision_tree:
+      min_samples_leaf: [100, 200]
+      max_depth: [5, 30, 100]
+    logistic_regression:
+      max_iter: [200, 500]
+      C: [0.5, 1, 2]
+    xgboost:
+      max_depth: [3, 5]
+      learning_rate: [0.05, 0.1]
+    PSM_lr:
+      alpha0: [0.5, 1]
+      alphap: [0, 1]
+      tol: [1e-5]
+      penalty_main: ['l1', 'l2']
+    SPSM_lr:
+      alpha0: [0, 0.5]
+      alphap: [1, 2]
+      tol: [1e-5]
+      penalty_main: ['l1', 'l2']
+
+# Training settings
+training:
+  cross_validation:
+    method: kfold  # Options: kfold, stratified_kfold, leave_one_out
+    params:
+      n_splits: 5
+      shuffle: true
+  scoring: accuracy  # Options: accuracy, f1, roc_auc, etc.
+
+# Evaluation settings
+evaluation:
+  metrics:
+    - accuracy
+    - f1
+    - roc_auc
+  save_model: true
+  save_metrics: true
+
+# Logging settings
+logging:
+  level: INFO
+  log_file: "logs/training.log"
